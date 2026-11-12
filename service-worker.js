@@ -1,4 +1,4 @@
-const CACHE_NAME = "tasca-shell-v1";
+const CACHE_NAME = "tasca-shell-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -6,7 +6,7 @@ const APP_SHELL = [
   "./app.js",
   "./supabase-config.js",
   "./manifest.webmanifest",
-  "./tasca-icon.svg"
+  "./tasca-icon.png"
 ];
 
 self.addEventListener("install", (event) => {
