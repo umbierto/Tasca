@@ -462,7 +462,7 @@ async function signUp() {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: window.location.origin }
+    options: { emailRedirectTo: `${window.location.origin}${window.location.pathname}` }
   });
   setAuthBusy(false);
   if (error) { showToast(`Creazione account non riuscita: ${error.message}`); return; }
