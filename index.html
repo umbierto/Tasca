@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Tasca" />
+    <title>Tasca — Le tue spese</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="tasca-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="tasca-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="menu-scrim" id="menuScrim" aria-hidden="true"></div>
+    <aside class="side-menu" id="sideMenu" aria-hidden="true" aria-labelledby="menuTitle">
+      <div class="side-menu-header">
+        <div><p class="section-kicker">IMPOSTAZIONI</p><h2 id="menuTitle">Il tuo spazio</h2></div>
+        <button class="icon-button" id="menuClose" type="button" aria-label="Chiudi menu">×</button>
+      </div>
+      <nav class="menu-nav" aria-label="Sezioni del menu">
+        <button type="button" data-menu-target="profileSection" aria-label="Profilo"><span aria-hidden="true">◉</span><small>Profilo</small></button>
+        <button type="button" data-menu-target="backupSection" aria-label="Backup e cloud"><span aria-hidden="true">☁</span><small>Backup</small></button>
+        <button type="button" data-menu-target="securitySection" aria-label="Sicurezza"><span aria-hidden="true">⌑</span><small>Sicurezza</small></button>
+      </nav>
+      <div class="menu-content">
+      <section class="menu-section" id="profileSection" aria-labelledby="profileTitle">
+        <p class="section-kicker">PROFILO</p>
+        <h3 id="profileTitle">Dati personali</h3>
+        <p class="profile-email" id="profileEmail">—</p>
+        <form id="profileForm" class="profile-form">
+          <label>Nome<input id="firstName" type="text" autocomplete="given-name" maxlength="60" /></label>
+          <label>Cognome<input id="lastName" type="text" autocomplete="family-name" maxlength="60" /></label>
+          <button class="button" type="submit">Salva dati</button>
+        </form>
+      </section>
+      <section class="menu-section" id="securitySection" aria-labelledby="passwordTitle">
+        <p class="section-kicker">SICUREZZA</p>
+        <h3 id="passwordTitle">Cambia password</h3>
+        <form id="passwordForm" class="profile-form">
+          <label>Nuova password<input id="newPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Almeno 8 caratteri" /></label>
+          <label>Conferma password<input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Ripeti la password" /></label>
+          <button class="button button-secondary" type="submit">Aggiorna password</button>
+        </form>
+      </section>
+      <section class="menu-section" id="backupSection" aria-labelledby="backupTitle">
+        <p class="section-kicker">DATI E CLOUD</p>
+        <h3 id="backupTitle">Backup e importazione</h3>
+        <p class="menu-copy" id="authStatus" aria-live="polite">Collegamento sicuro in preparazione…</p>
+        <form id="authForm" class="auth-form">
+          <label>Email<input id="authEmail" type="email" autocomplete="email" required placeholder="nome@esempio.it" /></label>
+          <label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="8" required placeholder="Almeno 8 caratteri" /></label>
+          <div class="auth-actions"><button class="button" id="signInButton" type="submit">Accedi</button><button class="text-button" id="signUpButton" type="button">Crea account</button></div>
+        </form>
+        <p class="menu-copy">Esporta una copia locale o scegli un file da importare nel cloud.</p>
+        <div class="backup-actions">
+          <button class="button" id="exportBackup" type="button">Scarica backup</button>
+          <label class="file-button" for="importBackup">Scegli un backup<input id="importBackup" type="file" accept="application/json,.json" /></label>
+        </div>
+        <p class="import-summary hidden" id="importSummary" aria-live="polite"></p>
+        <button class="button hidden" id="confirmImport" type="button">Importa nel cloud</button>
+      </section>
+      </div>
+      <button class="menu-auth-action" id="authAction" type="button"><span aria-hidden="true">↪</span><span>Log in</span></button>
+    </aside>
+
+    <main class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">GESTIONE PERSONALE</p>
+          <h1>Tasca</h1>
+          <p class="hero-copy">Tieni le tue spese sotto controllo, con semplicità.</p>
+        </div>
+        <div class="header-actions"><div class="month-chip" id="currentMonthLabel"></div><button class="menu-toggle" id="menuToggle" type="button" aria-controls="sideMenu" aria-expanded="false" aria-label="Apri menu"><span></span><span></span><span></span></button></div>
+      </header>
+
+      <div class="app-pages" id="appPages">
+      <section class="app-page home-page" aria-label="Home">
+      <section class="summary-card" aria-labelledby="summaryTitle">
+        <div>
+          <p class="section-kicker">RIEPILOGO</p>
+          <h2 id="summaryTitle">Spese del periodo</h2>
+        </div>
+        <p class="total" id="monthlyTotal">€0,00</p>
+        <p class="summary-detail" id="summaryDetail">Nessuna spesa nel periodo selezionato</p>
+      </section>
+
+        <section class="panel form-panel" aria-labelledby="formTitle">
+          <div class="panel-heading"><div><p class="section-kicker">NUOVA REGISTRAZIONE</p><h2 id="formTitle">Aggiungi una spesa</h2></div></div>
+          <form id="expenseForm"><input type="hidden" id="expenseId" /><div class="form-grid">
+            <label>Importo<span class="input-wrap currency-wrap"><span>€</span><input id="amount" type="number" min="0.01" step="0.01" placeholder="0,00" required /></span></label>
+            <label>Data<input id="date" type="date" required /></label>
+            <label>Categoria<select id="category" required></select></label>
+            <label>Descrizione <span class="optional">opzionale</span><input id="description" type="text" maxlength="100" placeholder="Es. Spesa settimanale" /></label>
+          </div><div class="form-actions"><button class="button button-secondary hidden" id="cancelEdit" type="button">Annulla</button><button class="button" id="submitButton" type="submit">Aggiungi spesa</button></div></form>
+        </section>
+      </section>
+      <section class="app-page registry-page" aria-label="Registro">
+        <section class="panel list-panel" aria-labelledby="listTitle">
+          <div class="list-header"><div><p class="section-kicker">REGISTRO</p><h2 id="listTitle">Le tue spese</h2></div><span class="count-badge" id="expenseCount">0 voci</span></div>
+          <div class="filters" aria-label="Filtri spese"><label>Mese<input id="monthFilter" type="month" /></label><label>Categoria<select id="categoryFilter"></select></label><button class="text-button" id="clearFilters" type="button">Azzera filtri</button></div>
+          <div class="expense-list" id="expenseList" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <section class="app-page budget-page" aria-label="Pianificazione">
+      <section class="panel budget-panel" aria-labelledby="budgetTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">PIANIFICAZIONE</p>
+            <h2 id="budgetTitle">Budget mensile</h2>
+          </div>
+          <label class="month-chip month-picker">
+            <span class="visually-hidden">Scegli il mese per il budget</span>
+            <input id="budgetMonthPicker" type="month" aria-label="Scegli il mese per il budget" />
+          </label>
+        </div>
+        <form class="budget-form" id="budgetForm">
+          <label>
+            Budget per il mese selezionato
+            <span class="input-wrap currency-wrap"><span>€</span><input id="budgetAmount" type="number" min="0.01" step="0.01" placeholder="Es. 1.200,00" inputmode="decimal" /></span>
+          </label>
+          <div class="budget-actions">
+            <button class="button button-secondary hidden" id="deleteBudget" type="button">Elimina budget</button>
+            <button class="button" id="saveBudget" type="submit">Salva budget</button>
+          </div>
+        </form>
+        <div class="budget-stats" aria-live="polite">
+          <div><span>Spese del mese</span><strong id="budgetSpent">€0,00</strong></div>
+          <div><span>Budget totale</span><strong id="budgetTotal">—</strong></div>
+          <div><span>Residuo</span><strong id="budgetRemaining">—</strong></div>
+          <div><span>Utilizzato</span><strong id="budgetPercentage">—</strong></div>
+        </div>
+        <div class="budget-progress" aria-label="Avanzamento del budget"><span id="budgetProgressBar"></span></div>
+        <p class="budget-status" id="budgetStatus">Seleziona un mese per impostare un budget.</p>
+      </section>
+      </section>
+
+      <section class="app-page chart-page" aria-label="Panoramica">
+      <section class="panel chart-panel" aria-labelledby="chartTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">PANORAMICA</p>
+            <h2 id="chartTitle">Spese per categoria</h2>
+          </div>
+          <label class="month-chip month-picker">
+            <span class="visually-hidden">Scegli il mese per il grafico</span>
+            <input id="chartMonthPicker" type="month" aria-label="Scegli il mese per il grafico" />
+          </label>
+        </div>
+        <div class="chart-content">
+          <div class="chart-wrap">
+            <canvas id="categoryChart" role="img" aria-label="Grafico a ciambella delle spese per categoria"></canvas>
+            <div class="chart-centre" aria-hidden="true">
+              <span>Totale</span>
+              <strong id="chartTotal">€0,00</strong>
+            </div>
+          </div>
+          <div class="chart-legend" id="chartLegend" aria-live="polite"></div>
+        </div>
+        <p class="chart-empty" id="chartEmpty">Seleziona un mese per visualizzare la distribuzione delle spese.</p>
+      </section>
+
+      </section>
+      </div>
+      <nav class="mobile-page-nav" aria-label="Pagine"><button type="button" data-page="0" class="active" aria-label="Home"></button><button type="button" data-page="1" aria-label="Registro"></button><button type="button" data-page="2" aria-label="Panoramica"></button><button type="button" data-page="3" aria-label="Pianificazione"></button></nav>
+    </main>
+
+    <template id="expenseTemplate">
+      <article class="expense-item">
+        <div class="expense-icon" aria-hidden="true"></div>
+        <div class="expense-info">
+          <h3 class="expense-description"></h3>
+          <p><span class="expense-category"></span><span class="dot">•</span><time class="expense-date"></time></p>
+        </div>
+        <strong class="expense-amount"></strong>
+        <div class="expense-actions">
+          <button class="icon-button edit-button" type="button" aria-label="Modifica spesa">✎</button>
+          <button class="icon-button delete-button" type="button" aria-label="Elimina spesa">×</button>
+        </div>
+      </article>
+    </template>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

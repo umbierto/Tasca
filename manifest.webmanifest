@@ -1,0 +1,19 @@
+{
+  "name": "Tasca — Le tue spese",
+  "short_name": "Tasca",
+  "description": "Registra le spese personali e sincronizzale in modo sicuro.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f9fc",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "tasca-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
