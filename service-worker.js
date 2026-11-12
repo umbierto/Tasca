@@ -1,9 +1,9 @@
-const CACHE_NAME = "tasca-shell-v4";
+const CACHE_NAME = "tasca-shell-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./style.css",
-  "./app.js",
+  "./app.js?v=4",
   "./supabase-config.js",
   "./manifest.webmanifest",
   "./tasca-icon.png"
