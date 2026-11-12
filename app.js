@@ -40,10 +40,11 @@ const elements = {
   exportBackup: document.querySelector("#exportBackup"), importBackup: document.querySelector("#importBackup"), importSummary: document.querySelector("#importSummary"), confirmImport: document.querySelector("#confirmImport"),
   authForm: document.querySelector("#authForm"), authEmail: document.querySelector("#authEmail"), authPassword: document.querySelector("#authPassword"),
   authStatus: document.querySelector("#authStatus"), signIn: document.querySelector("#signInButton"), signUp: document.querySelector("#signUpButton"), authAction: document.querySelector("#authAction"),
-  menuToggle: document.querySelector("#menuToggle"), menuClose: document.querySelector("#menuClose"), menuScrim: document.querySelector("#menuScrim"), sideMenu: document.querySelector("#sideMenu"),
+  menuToggle: document.querySelector("#menuToggle"), menuScrim: document.querySelector("#menuScrim"), sideMenu: document.querySelector("#sideMenu"),
   profileEmail: document.querySelector("#profileEmail"), profileForm: document.querySelector("#profileForm"), firstName: document.querySelector("#firstName"), lastName: document.querySelector("#lastName"),
   passwordForm: document.querySelector("#passwordForm"), newPassword: document.querySelector("#newPassword"), confirmPassword: document.querySelector("#confirmPassword"),
-  appPages: document.querySelector("#appPages"), pageButtons: [...document.querySelectorAll(".mobile-page-nav button")], menuNavButtons: [...document.querySelectorAll(".menu-nav button")]
+  appPages: document.querySelector("#appPages"), pageButtons: [...document.querySelectorAll(".mobile-page-nav button")], menuNavButtons: [...document.querySelectorAll(".menu-nav button")],
+  settingsView: document.querySelector("#settingsView"), settingsPages: [...document.querySelectorAll(".settings-page")], settingsCloseButtons: [...document.querySelectorAll(".settings-close")]
 };
 
 let expenses = loadExpenses();
@@ -357,6 +358,19 @@ function setMenuOpen(isOpen) {
   elements.menuScrim.setAttribute("aria-hidden", String(!isOpen));
 }
 
+function openSettingsPage(page) {
+  setMenuOpen(false);
+  elements.settingsPages.forEach(section => section.classList.toggle("hidden", section.dataset.settingsPage !== page));
+  elements.settingsView.classList.remove("hidden");
+  if (page === "backup" && !currentUser) elements.authEmail.focus();
+}
+
+function closeSettingsPage() {
+  elements.settingsView.classList.add("hidden");
+  elements.settingsPages.forEach(section => section.classList.add("hidden"));
+  elements.menuToggle.focus();
+}
+
 async function updateProfile(event) {
   event.preventDefault();
   if (!currentUser) return;
@@ -550,8 +564,8 @@ elements.exportBackup.addEventListener("click", exportBackup);
 elements.importBackup.addEventListener("change", selectBackup);
 elements.confirmImport.addEventListener("click", importBackup);
 elements.menuToggle.addEventListener("click", () => setMenuOpen(true));
-elements.menuClose.addEventListener("click", () => setMenuOpen(false));
 elements.menuScrim.addEventListener("click", () => setMenuOpen(false));
+elements.settingsCloseButtons.forEach(button => button.addEventListener("click", closeSettingsPage));
 elements.profileForm.addEventListener("submit", updateProfile);
 elements.passwordForm.addEventListener("submit", updatePassword);
 elements.pageButtons.forEach((button, index) => button.addEventListener("click", () => elements.appPages.scrollTo({ left: elements.appPages.clientWidth * index, behavior: "smooth" })));
@@ -560,8 +574,7 @@ elements.authForm.addEventListener("submit", event => { event.preventDefault(); 
 elements.signUp.addEventListener("click", signUp);
 elements.authAction.addEventListener("click", async () => {
   if (!currentUser) {
-    document.querySelector("#backupSection").scrollIntoView({ behavior: "smooth", block: "start" });
-    elements.authEmail.focus();
+    openSettingsPage("backup");
     return;
   }
   setAuthBusy(true);
@@ -569,10 +582,10 @@ elements.authAction.addEventListener("click", async () => {
   setAuthBusy(false);
   if (error) showToast(`Uscita non riuscita: ${error.message}`);
 });
-elements.menuNavButtons.forEach(button => button.addEventListener("click", () => document.querySelector(`#${button.dataset.menuTarget}`).scrollIntoView({ behavior: "smooth", block: "start" })));
+elements.menuNavButtons.forEach(button => button.addEventListener("click", () => openSettingsPage(button.dataset.menuTarget)));
 window.addEventListener("resize", renderChart);
 window.addEventListener("resize", updatePageNavigation);
-window.addEventListener("keydown", event => { if (event.key === "Escape") setMenuOpen(false); });
+window.addEventListener("keydown", event => { if (event.key === "Escape") { setMenuOpen(false); closeSettingsPage(); } });
 window.addEventListener("focus", loadCloudData);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) loadCloudData(); });
 
